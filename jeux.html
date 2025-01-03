@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Roue de la Fortune BNP</title>
+    <style>
+      * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      padding: 15px;
+      color: white;
+      min-height: 100vh;
+      padding-bottom: 160px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      color: #fff;
+      text-shadow: 0 0 10px rgba(255,255,255,0.2);
+      margin-bottom: 10px;
+    }
+
+    .game-info {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 600px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 12px;
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+
+    .info-item {
+      text-align: center;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .info-label {
+      font-size: 0.7rem;
+      color: #4CAF50;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-value {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .wheel-container {
+      position: relative;
+      width: 250px;
+      height: 250px;
+      margin: 20px 0;
+    }
+
+    .wheel {
+      width: 100%;
+      height: 100%;
+      transform-origin: center;
+      filter: drop-shadow(0 0 10px rgba(76, 175, 80, 0.3));
+    }
+
+    .arrow {
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 16px solid #4CAF50;
+      filter: drop-shadow(0 0 3px rgba(76, 175, 80, 0.5));
+      z-index: 1;
+    }
+
+    .betting-section {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(42, 42, 42, 0.95);
+      padding: 15px;
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(76, 175, 80, 0.5);
+      box-shadow: 0 -3px 10px rgba(0,0,0,0.2);
+    }
+
+    .input-row {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    input, select {
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      border: 1px solid rgba(76, 175, 80, 0.5);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+      width: 140px;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #4CAF50;
+      box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+    }
+
+    label {
+      font-size: 0.75rem;
+      color: #4CAF50;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    button {
+      padding: 10px 25px;
+      font-size: 0.9rem;
+      background: linear-gradient(45deg, #4CAF50, #45a049);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+      width: 100%;
+      max-width: 200px;
+      margin: 0 auto;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: bold;
+      box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 12px rgba(76, 175, 80, 0.4);
+    }
+
+    .potential-win {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #4CAF50;
+      font-weight: bold;
+      padding: 10px;
+      background: rgba(76, 175, 80, 0.1);
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+
+    .user-info {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .solde {
+      font-size: 1.2rem;
+      color: #4CAF50;
+      font-weight: bold;
+    }
+
+    svg.wheel circle {
+      stroke: rgba(255, 255, 255, 0.1);
+      stroke-width: 0.5;
+    }
+
+    svg.wheel path {
+      stroke-width: 3;
+      transition: all 0.3s;
+    }
+
+    svg.wheel path:first-of-type {
+      stroke: #ff4444;
+    }
+
+    svg.wheel path:last-of-type {
+      stroke: #4CAF50;
+    }
+
+    .win-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, #4CAF50, #2E7D32);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      z-index: 1000;
+      text-align: center;
+      min-width: 280px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .win-popup.show {
+      opacity: 1;
+      visibility: visible;
+      animation: popIn 0.5s ease-out forwards;
+    }
+
+    .win-popup h2 {
+      font-size: 1.5rem;
+      color: #fff;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .win-popup p {
+      color: #fff;
+      font-size: 0.9rem;
+      margin: 5px 0;
+    }
+
+    .win-popup .win-amount {
+      font-size: 1.8rem;
+      color: #FFD700;
+      text-shadow: 0 0 15px rgba(255,215,0,0.5);
+      margin: 15px 0;
+      font-weight: bold;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    @keyframes popIn {
+      0% {
+        transform: translate(-50%, -50%) scale(0.5);
+      }
+      80% {
+        transform: translate(-50%, -50%) scale(1.1);
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+      }
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(var(--end-rotation)); }
+    }
+
+    .spinning {
+      animation: spin 4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+  
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay"></div>
+    <div class="container">
+        <h1>🎮 Roue de la Fortune  🎮</h1>
+        
+        <div class="balance-card">
+            <div class="balance-label">ÉQUILIBRE</div>
+            <div class="balance-amount" id="userSolde">Chargement...</div>
+        </div>
+
+        <div class="game-info">
+            <div class="info-item">
+                <div class="info-label">Tours Restants</div>
+                <div class="info-value" id="toursRestants">30</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Total des Gains</div>
+                <div class="info-value" id="totalGains">0 FCFA</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Total Joué</div>
+                <div class="info-value" id="totalJoue">0 FCFA</div>
+            </div>
+        </div>
+        
+        <div class="wheel-container">
+            <div class="arrow"></div>
+            <svg class="wheel" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="48" fill="none"/>
+                <path d="M50,2 A48,48 0 0,1 50,98" fill="none"/>
+                <path d="M50,2 A48,48 0 0,0 50,98" fill="none"/>
+                <circle cx="50" cy="50" r="2" fill="#fff"/>
+            </svg>
+        </div>
+
+        <div class="betting-section">
+            <div class="potential-win" id="potentialWin">Gains potentiels: 0 FCFA</div>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="mise">Votre Mise (FCFA)</label>
+                    <input type="number" id="mise" min="100" value="1000" step="100" oninput="calculatePotentialWin()">
+                </div>
+                
+                <div class="input-group">
+                    <label for="multiplicateur">Multiplicateur</label>
+                    <select id="multiplicateur" onchange="calculatePotentialWin()">
+                        <option value="1.5">x1.5</option>
+                        <option value="2">x2</option>
+                        <option value="3">x3</option>
+                    </select>
+                </div>
+            </div>
+            <button onclick="spin()" id="spinButton">JOUER</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+        import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCPQvlxIjvJPkMZQ4qElkHla_xQ5QiZfFs",
+            authDomain: "paris-3df9f.firebaseapp.com",
+            databaseURL: "https://paris-3df9f-default-rtdb.firebaseio.com",
+            projectId: "paris-3df9f",
+            storageBucket: "paris-3df9f.appspot.com",
+            messagingSenderId: "365107415196",
+            appId: "1:365107415196:web:4c0021baec5a51a0f50559"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let currentUser = null;
+        let userSolde = 0;
+        let canSpin = true;
+        let toursRestants = 30;
+        let totalGains = 0;
+        let totalJoue = 0;
+
+        // Écouter les changements d'authentification
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                const userRef = ref(db, 'users/' + user.uid);
+                onValue(userRef, (snapshot) => {
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        userSolde = userData.balance;
+                        updateUIWithUserData();
+                    }
+                });
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        function updateUIWithUserData() {
+            document.getElementById('userSolde').textContent = `${formatAmount(userSolde)}`;
+        }
+
+        window.formatAmount = function(amount) {
+            return new Intl.NumberFormat('fr-FR', {
+                style: 'decimal',
+                maximumFractionDigits: 0
+            }).format(amount) + ' FCFA';
+        }
+
+        window.calculatePotentialWin = function() {
+            const mise = parseFloat(document.getElementById('mise').value) || 0;
+            const multiplicateur = parseFloat(document.getElementById('multiplicateur').value);
+            const potentialWin = mise * multiplicateur;
+            document.getElementById('potentialWin').textContent = `Gains potentiels: ${formatAmount(potentialWin)}`;
+        }
+
+        function showWinMessage(amount) {
+            const overlay = document.getElementById('overlay');
+            overlay.classList.add('show');
+            
+            const popup = document.createElement('div');
+            popup.className = 'win-popup';
+            popup.innerHTML = `
+                <h2>🎉 FÉLICITATIONS! 🎉</h2>
+                <p>Vous avez gagné</p>
+                <div class="win-amount">${formatAmount(amount)}</div>
+            `;
+            document.body.appendChild(popup);
+            
+            setTimeout(() => popup.classList.add('show'), 100);
+            
+            setTimeout(() => {
+                popup.style.animation = 'fadeOut 0.5s forwards';
+                overlay.classList.remove('show');
+                setTimeout(() => popup.remove(), 500);
+            }, 2000);
+        }
+
+        async function updateUserBalance(newBalance) {
+            if (!currentUser) return;
+            
+            const userRef = ref(db, 'users/' + currentUser.uid);
+            await update(userRef, {
+                balance: newBalance
+            });
+            userSolde = newBalance;
+            updateUIWithUserData();
+        }
+
+        function updateGameInfo() {
+            document.getElementById('toursRestants').textContent = toursRestants;
+            document.getElementById('totalGains').textContent = formatAmount(totalGains);
+            document.getElementById('totalJoue').textContent = formatAmount(totalJoue);
+        }
+
+        function spinWheel(endDegrees) {
+            return new Promise(resolve => {
+                const wheel = document.querySelector('.wheel');
+                wheel.style.setProperty('--end-rotation', `${endDegrees}deg`);
+                wheel.classList.add('spinning');
+                
+                wheel.onanimationend = () => {
+                    wheel.classList.remove('spinning');
+                    wheel.style.transform = `rotate(${endDegrees % 360}deg)`;
+                    resolve();
+                };
+            });
+        }
+
+        window.spin = async function() {
+            if (!canSpin) return;
+            
+            if (!currentUser) {
+                alert('Veuillez vous connecter pour jouer');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const mise = parseFloat(document.getElementById('mise').value);
+            const multiplicateur = parseFloat(document.getElementById('multiplicateur').value);
+            
+            if (mise <= 0) {
+                alert('Veuillez entrer une mise valide');
+                return;
+            }
+
+            if (userSolde < mise) {
+                alert('Solde insuffisant pour placer cette mise');
+                return;
+            }
+
+            canSpin = false;
+            
+            // Déduire la mise du solde
+            await updateUserBalance(userSolde - mise);
+            
+            // Configuration de la rotation
+            const baseRotation = 1440; // 4 tours complets
+            const greenZoneRotation = 270; // Zone verte à 270 degrés
+            const randomOffset = Math.random() * 60 - 30; // Ajout d'aléatoire
+            const totalRotation = baseRotation + greenZoneRotation + randomOffset;
+            
+            // Faire tourner la roue
+            await spinWheel(totalRotation);
+            
+            // Calculer les gains
+            const gainPotentiel = mise * multiplicateur;
+            totalGains += gainPotentiel;
+            totalJoue += mise;
+            toursRestants--;
+            
+            // Mettre à jour le solde avec les gains
+            await updateUserBalance(userSolde + gainPotentiel);
+            
+            // Afficher le message de victoire
+            showWinMessage(gainPotentiel);
+            
+            // Mettre à jour les informations du jeu
+            updateGameInfo();
+            
+            // Vérifier les tours restants
+            if (toursRestants <= 0) {
+                alert('Vous avez utilisé tous vos tours!');
+                document.getElementById('spinButton').disabled = true;
+            } else {
+                canSpin = true;
+            }
+        }
+
+        // Initialiser les calculs de gains potentiels
+        calculatePotentialWin();
+        updateGameInfo();
+    </script>
+</body>
+</html>
